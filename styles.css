@@ -1,0 +1,71 @@
+html {
+  box-sizing: border-box;
+}
+
+*, 
+*::before, 
+*::after {
+  box-sizing: inherit;
+}
+
+body {
+  background-color: rgb(63, 63, 63);
+  color: rgb(237, 236, 236);
+  font-family: sans-serif;
+}
+
+h1 {
+  text-align: center;
+  font-size: 48px;
+}
+
+.calculator {
+  width: 550px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.row {
+  display: flex; 
+  flex-direction: row;
+  justify-content: center;
+  flex: 1 0 0;
+}
+
+.row-item-1 {
+  display: flex;
+  flex: 1 0 0;
+}
+
+.row-item-1 input {
+  flex: 1 0 0;
+  font-size: 32px;
+  padding: 10px;
+  text-align: right;
+  caret-color: transparent;
+}
+
+.row-item-1 button,
+.row-item-2 button {
+  font-size: 26px;
+  padding: 10px 0;
+  width: 100%;
+}
+
+.row-item-2 {
+  flex: 2 0 0;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
