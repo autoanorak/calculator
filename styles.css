@@ -54,18 +54,25 @@ h1 {
   width: 100%;
 }
 
+button.pressed {
+  background-color: rgb(168, 168, 168);
+  color: white;
+  border: none;
+}
+
 .row-item-2 {
   flex: 2 0 0;
 }
 
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: black;
+  opacity: 1; /* Firefox */
 }
 
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: black;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: black;
 }
