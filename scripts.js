@@ -12,8 +12,13 @@ operators.forEach((button) => {
   button.addEventListener('mouseup', (event) => event.target.classList.remove('pressed'));
 })
 
-let runningDisplay = [];
-let resetDisplay = true;
+let firstOperand;
+let currentOperator;
+let secondOperand;
+let nextOperator;
+let result;
+
+let resetDisplay = false;
 
 function manipulateDisplay(event) {  
   let buttonContent = event.target.textContent;
@@ -21,14 +26,19 @@ function manipulateDisplay(event) {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '.',
   ];
 
-  if (event.target.getAttribute('id') === 'clear') {
-    display.value = '';
-    runningDisplay = [];
-  }
-  
-  if (resetDisplay && runningDisplay[0]) {
+  // When a digit or decimal is clicked, reset the display if the first operand
+  // and the current operator have been entered
+  if (resetDisplay) {
     display.value = '';
     resetDisplay = false;
+  }
+
+  if (event.target.getAttribute('id') === 'clear') {
+    display.value = '';
+    firstOperand = null;
+    currentOperator = null;
+    secondOperand = null;
+    nextOperator = null;
   }
   
   if (event.target.getAttribute('id') === 'decimal') {
@@ -43,67 +53,64 @@ function manipulateDisplay(event) {
   }
 }
 
-
 function operate(event) {
-  let currentOperator = event.target.getAttribute('id');
-  let operator;
-  let result;
-
-  if (runningDisplay.length === 0) {
-    let operand = parseFloat(display.value);
-    runningDisplay.push(operand, currentOperator);
-    console.log(`if (!runningDisplay[0] -- ${runningDisplay}`);
-    return;
-  } else {
-    let operand = parseFloat(display.value);
-    console.log(`else operand: ${operand}`);
-    operator = runningDisplay[1];
-    runningDisplay.push(operand);
+  checkInputs: 
+  if (!firstOperand) {
+    console.log('if reached');
+    firstOperand = parseFloat(display.value);
+    currentOperator = event.target.getAttribute('id');
     resetDisplay = true;
-    console.log(`if (!runningDisplay[0] ... else -- ${runningDisplay}`);
+  } else if (currentOperator === 'equals') {
+    console.log('else if reached');
+    nextOperator = event.target.getAttribute('id');
+    if (nextOperator !== 'equals') {
+      currentOperator = nextOperator;
+      nextOperator = null;
+    }
+    break checkInputs;
+  } else {
+    console.log('else reached');
+    secondOperand = parseFloat(display.value);
+    nextOperator = event.target.getAttribute('id');
+    resetDisplay = true;
   }
 
-  switch (operator) {
-    case 'add':
-      result = runningDisplay[0] + runningDisplay[2];
-      display.value = result;
-      resetDisplay = true;
-      runningDisplay = [];
-      runningDisplay.push(result, currentOperator);
-      console.log(`switch (operator) case 'add' -- ${runningDisplay}`);
-      break;
-    case 'subtract':
-      result = runningDisplay[0] - runningDisplay[2];
-      display.value = result;
-      resetDisplay = true;
-      runningDisplay = [];
-      runningDisplay.push(result, currentOperator);
-      console.log(`switch (operator) case 'subtract' -- ${runningDisplay}`);
-      break;
-    case 'multiply':
-      result = runningDisplay[0] * runningDisplay[2];
-      display.value = result;
-      resetDisplay = true;
-      runningDisplay = [];
-      runningDisplay.push(result, currentOperator);
-      // console.log(`switch (operator) case 'multiply' -- ${runningDisplay}`);
-      break;
-    case 'divide':
-      result = runningDisplay[0] / runningDisplay[2];
-      display.value = result;
-      resetDisplay = true;
-      runningDisplay = [];
-      runningDisplay.push(result, currentOperator);
-      // console.log(`switch (operator) case 'divide' -- ${runningDisplay}`);
-      break;
-    case 'equals':
-      result = runningDisplay[0];
-      display.value = result;
-      resetDisplay = true;
-      runningDisplay = [];
-      runningDisplay.push(result, currentOperator);
-      console.log(`switch (operator) case 'equals' -- ${runningDisplay}`);
-      break;
+  if (firstOperand && currentOperator && secondOperand) {
+    switch (currentOperator) {
+      case 'add':
+        console.log('switch add reached');
+        result = firstOperand + secondOperand;
+        display.value = result;
+        firstOperand = result;
+        secondOperand = null;
+        currentOperator = nextOperator;
+        break;
+      case 'subtract':
+        console.log('switch subtract reached');
+        result = firstOperand - secondOperand;
+        display.value = result;
+        firstOperand = result;
+        secondOperand = null;
+        currentOperator = nextOperator;
+        break;
+      case 'multiply':
+        console.log('switch multiply reached');
+        result = firstOperand * secondOperand;
+        display.value = result;
+        firstOperand = result;
+        secondOperand = null;
+        currentOperator = nextOperator;
+        break;
+      case 'divide':
+        console.log('switch divide reached');
+        result = firstOperand / secondOperand;
+        display.value = result;
+        firstOperand = result;
+        secondOperand = null;
+        currentOperator = nextOperator;
+        break;
+    }
   }
+  
 }
 
