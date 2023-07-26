@@ -33,6 +33,7 @@ function manipulateDisplay(event) {
     resetDisplay = false;
   }
 
+  // Clear display and empty variables when 'clear' button is pressed
   if (event.target.getAttribute('id') === 'clear') {
     display.value = '';
     firstOperand = null;
@@ -41,40 +42,45 @@ function manipulateDisplay(event) {
     nextOperator = null;
   }
   
+  // Specify behaviour for when decimal button is clicked
   if (event.target.getAttribute('id') === 'decimal') {
     if (display.value.split('').includes('.')) {
       return;
     }
     display.value += buttonContent;
   }
-  
+
+  // Populate display with numbers
   if (contentForDisplay.includes(Number(buttonContent))) {
     display.value += buttonContent;
   }
 }
 
 function operate(event) {
+  
   checkInputs: 
+  // If there is no first operand (i.e. user has not yet input any numbers, or
+  // there is no result from a previous calculation)
   if (!firstOperand) {
-    console.log('if reached');
     firstOperand = parseFloat(display.value);
     currentOperator = event.target.getAttribute('id');
     resetDisplay = true;
+    // Special behaviour for when the 'equals' button is clicked
   } else if (currentOperator === 'equals') {
-    console.log('else if reached');
     nextOperator = event.target.getAttribute('id');
     if (nextOperator !== 'equals') {
       currentOperator = nextOperator;
       nextOperator = null;
     }
     break checkInputs;
+  // General behaviour for when there is already a first
   } else {
-    console.log('else reached');
     secondOperand = parseFloat(display.value);
     nextOperator = event.target.getAttribute('id');
     resetDisplay = true;
   }
 
+  // Conduct operations only if inputs exist
   if (firstOperand && currentOperator && secondOperand) {
     switch (currentOperator) {
       case 'add':
