@@ -57,7 +57,8 @@ h1 {
 button.pressed {
   background-color: rgb(168, 168, 168);
   color: white;
-  border: none;
+  border-style: inset;
+  border-color: rgb(168, 168, 168);
 }
 
 .row-item-2 {
