@@ -51,7 +51,7 @@ function manipulateDisplay(event) {
   }
 
   // When a digit or decimal is clicked, reset the display if the first operand
-  // and the current operator have been entered
+  // and the current operator have already been set
   if (resetDisplay) {
     display.value = '';
     resetDisplay = false;
@@ -88,27 +88,36 @@ function manipulateDisplay(event) {
 function operate(event) {
   let operator = parseOperator(event);
 
-  checkInputs: 
+  if (operator === 'equals') {
+    if (displayUpdated) {
+      secondOperand = parseFloat(display.value);
+      displayUpdated = false;
+      resetDisplay = true;
+    }
+  } 
+  
+  if (operator !== 'equals' && currentOperator) {
+    nextOperator = operator;
+  }
+
+  // If the first operand is not set, always set the first operand and current operator together
   if (!firstOperand) {
     firstOperand = parseFloat(display.value);
     currentOperator = operator;
     resetDisplay = true;
-  } else if (operator === 'equals') {
-    nextOperator = operator;
-
-    if (displayUpdated) {
-      secondOperand = parseFloat(display.value);
-      displayUpdated = true;
-      resetDisplay = true;
-    }
-    break checkInputs;
-  } else if (firstOperand && !secondOperand) {
-    console.log('firstOperand set, no secondOperand');
-    nextOperator = operator;
+  // If the first operand has been set but no current operator, set the current operator
+  } else if (firstOperand && !currentOperator) {
+    currentOperator = operator;
+  // If the first operand and current operator have been set, update second operand only if
+  // the user has typed something into the display since the time when the current operator was set
+  // i.e. if the user sets the current operator and then clicks another operator without
+  // updating the display, display.value will still be the previous operand; do not set
+  } else if (firstOperand && currentOperator && !secondOperand) {
+    currentOperator = operator;
     
     if (displayUpdated) {
       secondOperand = parseFloat(display.value);
-      displayUpdated = true;
+      displayUpdated = false;
       resetDisplay = true;
     }
   }
@@ -122,6 +131,7 @@ function operate(event) {
         firstOperand = result;
         secondOperand = null;
         currentOperator = nextOperator;
+        nextOperator = null;
         break;
       case 'subtract':
         result = firstOperand - secondOperand;
@@ -129,6 +139,7 @@ function operate(event) {
         firstOperand = result;
         secondOperand = null;
         currentOperator = nextOperator;
+        nextOperator = null;
         break;
       case 'multiply':
         result = firstOperand * secondOperand;
@@ -136,6 +147,7 @@ function operate(event) {
         firstOperand = result;
         secondOperand = null;
         currentOperator = nextOperator;
+        nextOperator = null;
         break;
       case 'divide':
         result = firstOperand / secondOperand;
@@ -143,6 +155,7 @@ function operate(event) {
         firstOperand = result;
         secondOperand = null;
         currentOperator = nextOperator;
+        nextOperator = null;
         break;
       case 'modulo':
         result = firstOperand % secondOperand;
@@ -150,6 +163,7 @@ function operate(event) {
         firstOperand = result;
         secondOperand = null;
         currentOperator = nextOperator;
+        nextOperator = null;
         break;
     }
   }
