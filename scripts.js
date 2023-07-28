@@ -21,7 +21,7 @@ let nextOperator;
 let result;
 
 let resetDisplay = false;
-let displayUpdated = false;
+let secondOperandQueued = false;
 
 function keyboardActions(event) {
   let isDigitOrDecimal = /^[.\d]$/.test(event.key);
@@ -34,15 +34,20 @@ function keyboardActions(event) {
 
   if (isDigitOrDecimal) {
     manipulateDisplay(event);
+    return;
   }
 
-  let operators = ['+', '-', '*', ];
+  let operators = ['+', '-', '*', '/', '%', '=', 'Enter'];
+
+  if (operators.includes(event.key)) {
+    operate(event);
+  }
 
 }
 
 function manipulateDisplay(event) {  
   let buttonContent = event.target.textContent;
-  let contentForDisplay = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '.' ];
+  let contentForDisplay = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '.'];
 
   if (event.target.id === 'display') {
     buttonContent = event.key;
@@ -55,7 +60,7 @@ function manipulateDisplay(event) {
   if (resetDisplay) {
     display.value = '';
     resetDisplay = false;
-    displayUpdated = false;
+    secondOperandQueued = false;
   }
 
   // Clear display and empty variables when 'clear' button is pressed
@@ -78,7 +83,7 @@ function manipulateDisplay(event) {
   // Populate display with numbers
   if (contentForDisplay.includes(parseInt(buttonContent))) {
     if (currentOperator) {
-      displayUpdated = true;
+      secondOperandQueued = true;
     }
 
     display.value += buttonContent;
@@ -89,14 +94,12 @@ function operate(event) {
   let operator = parseOperator(event);
 
   if (operator === 'equals') {
-    if (displayUpdated) {
+    if (secondOperandQueued) {
       secondOperand = parseFloat(display.value);
-      displayUpdated = false;
+      secondOperandQueued = false;
       resetDisplay = true;
     }
-  } 
-  
-  if (operator !== 'equals' && currentOperator) {
+  } else if (operator !== 'equals' && currentOperator) {
     nextOperator = operator;
   }
 
@@ -114,60 +117,36 @@ function operate(event) {
   // updating the display, display.value will still be the previous operand; do not set
   } else if (firstOperand && currentOperator && !secondOperand) {
     currentOperator = operator;
-    
-    if (displayUpdated) {
+
+    if (secondOperandQueued) {
       secondOperand = parseFloat(display.value);
-      displayUpdated = false;
+      secondOperandQueued = false;
       resetDisplay = true;
     }
-  }
-
-  // Conduct operations only if inputs exist
-  if (firstOperand && currentOperator && secondOperand) {
+  } else if (firstOperand && currentOperator && secondOperand) {
     switch (currentOperator) {
       case 'add':
         result = firstOperand + secondOperand;
-        display.value = result;
-        firstOperand = result;
-        secondOperand = null;
-        currentOperator = nextOperator;
-        nextOperator = null;
+        updateInputs();
         break;
       case 'subtract':
         result = firstOperand - secondOperand;
-        display.value = result;
-        firstOperand = result;
-        secondOperand = null;
-        currentOperator = nextOperator;
-        nextOperator = null;
+        updateInputs();
         break;
       case 'multiply':
         result = firstOperand * secondOperand;
-        display.value = result;
-        firstOperand = result;
-        secondOperand = null;
-        currentOperator = nextOperator;
-        nextOperator = null;
+        updateInputs();
         break;
       case 'divide':
         result = firstOperand / secondOperand;
-        display.value = result;
-        firstOperand = result;
-        secondOperand = null;
-        currentOperator = nextOperator;
-        nextOperator = null;
+        updateInputs();
         break;
       case 'modulo':
         result = firstOperand % secondOperand;
-        display.value = result;
-        firstOperand = result;
-        secondOperand = null;
-        currentOperator = nextOperator;
-        nextOperator = null;
+        updateInputs();
         break;
     }
   }
-  
 }
 
 
@@ -185,9 +164,19 @@ function parseOperator(event) {
       case '%':
         return 'modulo';
       case '=':
+      case 'Enter':
         return 'equals';
     }
   } else {
     return event.target.getAttribute('id');
   }
+}
+
+
+function updateInputs() {
+  display.value = result;
+  firstOperand = result;
+  secondOperand = null;
+  currentOperator = nextOperator;
+  nextOperator = null;
 }
