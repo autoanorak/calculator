@@ -25,9 +25,10 @@ let secondOperandQueued = false;
 
 function keyboardActions(event) {
   let isDigitOrDecimal = /^[.\d]$/.test(event.key);
-  let operators = ['+', '-', '*', '/', '^', '=', 'Enter'];
+  let isOperator = /[\+\-\*\/\^\=]|Enter/.test(event.key);
 
   if (event.key === 'Backspace') {
+    moveCursorEnd();
     return;
   } else {
     event.preventDefault();
@@ -35,11 +36,11 @@ function keyboardActions(event) {
 
   if (isDigitOrDecimal) {
     manipulateDisplay(event);
-    return;
-  } else if (operators.includes(event.key)) {
+  } else if (isOperator) {
     operate(event);
   }
 }
+
 
 function manipulateDisplay(event) {  
   let buttonContent = event.target.textContent;
@@ -91,6 +92,7 @@ function manipulateDisplay(event) {
     display.value += buttonContent;
   }
 }
+
 
 function operate(event) {
   let operator = parseOperator(event);
@@ -193,17 +195,28 @@ function updateInputs() {
 
 
 function blinkOnce(event) {
-  let operators = ['+', '-', '*', '/', '^', '=', 'Enter'];
+  let isOperator = /[\+\-\*\/\^\=]|Enter/.test(event.key);
 
-  if (event.target.id === 'display' && operators.includes(event.key)) {
+  if (event.target.id === 'display') {
+    if (!isOperator) { 
+      return; 
+    } else {
+      display.classList.add('blink');
+      setTimeout(() => {
+        display.classList.remove('blink');
+      }, 60)    
+    }
+  } else {
     display.classList.add('blink');
     setTimeout(() => {
       display.classList.remove('blink');
-    }, 60)
+    }, 60)  
   }
+}
 
-  display.classList.add('blink');
-  setTimeout(() => {
-    display.classList.remove('blink');
-  }, 60)
+
+function moveCursorEnd() {
+  let cursorIndex= display.value.length + 1;
+
+  display.setSelectionRange(cursorIndex, cursorIndex);
 }
