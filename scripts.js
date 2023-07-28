@@ -2,17 +2,17 @@ const buttons = document.querySelectorAll('.calculator button:not(.operator)');
 const operators = document.querySelectorAll('.operator');
 const display = document.querySelector('#display');
 
-buttons.forEach((button) => { 
+buttons.forEach(button => { 
   button.addEventListener('click', manipulateDisplay);
 });
 
-operators.forEach((button) => {
+operators.forEach(button => {
   button.addEventListener('click', operate);
-  button.addEventListener('mousedown', (event) => event.target.classList.add('pressed'));
-  button.addEventListener('mouseup', (event) => event.target.classList.remove('pressed'));
+  button.addEventListener('click', blinkOnce);
 })
 
 display.addEventListener('keydown', keyboardActions);
+display.addEventListener('keydown', blinkOnce);
 
 let firstOperand;
 let currentOperator;
@@ -25,6 +25,7 @@ let secondOperandQueued = false;
 
 function keyboardActions(event) {
   let isDigitOrDecimal = /^[.\d]$/.test(event.key);
+  let operators = ['+', '-', '*', '/', '^', '=', 'Enter'];
 
   if (event.key === 'Backspace') {
     return;
@@ -35,14 +36,9 @@ function keyboardActions(event) {
   if (isDigitOrDecimal) {
     manipulateDisplay(event);
     return;
-  }
-
-  let operators = ['+', '-', '*', '/', '%', '=', 'Enter'];
-
-  if (operators.includes(event.key)) {
+  } else if (operators.includes(event.key)) {
     operate(event);
   }
-
 }
 
 function manipulateDisplay(event) {  
@@ -55,12 +51,17 @@ function manipulateDisplay(event) {
     buttonContent = event.target.textContent;
   }
 
+  if (buttonContent === '+/-') {
+    display.value = parseFloat(display.value * -1);
+    if (firstOperand) {
+      firstOperand = parseFloat(display.value);
+    }
   // When a digit or decimal is clicked, reset the display if the first operand
   // and the current operator have already been set
-  if (resetDisplay) {
+  } else if (resetDisplay) {
     display.value = '';
     resetDisplay = false;
-    secondOperandQueued = false;
+    secondOperandQueued = false; // need this?
   }
 
   // Clear display and empty variables when 'clear' button is pressed
@@ -74,16 +75,17 @@ function manipulateDisplay(event) {
   
   // Specify behaviour for when decimal button is clicked
   if (buttonContent === '.') {
-    if (display.value.split('').includes('.')) {
-      return;
+    if (display.value.split('').includes('.')) { 
+      return; 
     }
+
     display.value += buttonContent;
   }
 
   // Populate display with numbers
   if (contentForDisplay.includes(parseInt(buttonContent))) {
-    if (currentOperator) {
-      secondOperandQueued = true;
+    if (currentOperator) { 
+      secondOperandQueued = true; 
     }
 
     display.value += buttonContent;
@@ -93,15 +95,7 @@ function manipulateDisplay(event) {
 function operate(event) {
   let operator = parseOperator(event);
 
-  if (operator === 'equals') {
-    if (secondOperandQueued) {
-      secondOperand = parseFloat(display.value);
-      secondOperandQueued = false;
-      resetDisplay = true;
-    }
-  } else if (operator !== 'equals' && currentOperator) {
-    nextOperator = operator;
-  }
+  handleEquals(operator);
 
   // If the first operand is not set, always set the first operand and current operator together
   if (!firstOperand) {
@@ -109,21 +103,22 @@ function operate(event) {
     currentOperator = operator;
     resetDisplay = true;
   // If the first operand has been set but no current operator, set the current operator
-  } else if (firstOperand && !currentOperator) {
+  } else if (firstOperand && !currentOperator && operator !== 'equals') {
     currentOperator = operator;
+    resetDisplay = true;
   // If the first operand and current operator have been set, update second operand only if
   // the user has typed something into the display since the time when the current operator was set
   // i.e. if the user sets the current operator and then clicks another operator without
   // updating the display, display.value will still be the previous operand; do not set
-  } else if (firstOperand && currentOperator && !secondOperand) {
+  } else if (firstOperand && currentOperator && !secondOperandQueued && !secondOperand) {
     currentOperator = operator;
-
-    if (secondOperandQueued) {
-      secondOperand = parseFloat(display.value);
-      secondOperandQueued = false;
-      resetDisplay = true;
-    }
-  } else if (firstOperand && currentOperator && secondOperand) {
+  } else if (firstOperand && currentOperator && secondOperandQueued && !secondOperand) {
+    secondOperand = parseFloat(display.value);
+    secondOperandQueued = false;
+    resetDisplay = true;
+  }
+  
+  if (firstOperand && currentOperator && secondOperand) {
     switch (currentOperator) {
       case 'add':
         result = firstOperand + secondOperand;
@@ -141,8 +136,8 @@ function operate(event) {
         result = firstOperand / secondOperand;
         updateInputs();
         break;
-      case 'modulo':
-        result = firstOperand % secondOperand;
+      case 'power':
+        result = firstOperand ** secondOperand;
         updateInputs();
         break;
     }
@@ -161,8 +156,8 @@ function parseOperator(event) {
         return 'muiltiply';
       case '/':
         return 'divide';
-      case '%':
-        return 'modulo';
+      case '^':
+        return 'power';
       case '=':
       case 'Enter':
         return 'equals';
@@ -173,10 +168,42 @@ function parseOperator(event) {
 }
 
 
+function handleEquals(operator) {
+  if (operator === 'equals') {
+    if (secondOperandQueued) {
+      secondOperand = parseFloat(display.value);
+      secondOperandQueued = false;
+      // resetDisplay = true;
+    }
+    return;
+  } else if (operator !== 'equals' && currentOperator && secondOperandQueued) {
+    nextOperator = operator;
+  }
+}
+
+
 function updateInputs() {
   display.value = result;
   firstOperand = result;
+  result = null;
   secondOperand = null;
   currentOperator = nextOperator;
   nextOperator = null;
+}
+
+
+function blinkOnce(event) {
+  let operators = ['+', '-', '*', '/', '^', '=', 'Enter'];
+
+  if (event.target.id === 'display' && operators.includes(event.key)) {
+    display.classList.add('blink');
+    setTimeout(() => {
+      display.classList.remove('blink');
+    }, 60)
+  }
+
+  display.classList.add('blink');
+  setTimeout(() => {
+    display.classList.remove('blink');
+  }, 60)
 }

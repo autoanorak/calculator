@@ -30,7 +30,7 @@ h1 {
 .row {
   display: flex; 
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
   flex: 1 0 0;
 }
 
@@ -45,16 +45,25 @@ h1 {
   padding: 10px;
   text-align: right;
   caret-color: transparent;
+  appearance: none;
+  border: 1px solid black;
 }
 
-.row-item-1 button,
-.row-item-2 button {
+.row-item-1 input:focus {
+  appearance: none;
+  outline: none;
+}
+
+button {
   font-size: 26px;
   padding: 10px 0;
   width: 100%;
+  appearance: none;
+  border: 1px solid black;
+  background-color: rgb(230, 230, 230);
 }
 
-button.pressed {
+button:active {
   background-color: rgb(168, 168, 168);
   color: white;
   border-style: inset;
@@ -76,4 +85,16 @@ button.pressed {
 
 ::-ms-input-placeholder { /* Microsoft Edge */
   color: black;
+}
+
+@keyframes blinkDisplay {
+  0% { color: rgb(0, 0, 0); }
+  50% { color: rgb(255, 255, 255); }
+  100% { color: rgb(0, 0, 0); }
+}
+
+.blink {
+  animation-name: blinkDisplay;
+  animation-duration: 60ms;
+  animation-timing-function: linear;
 }
