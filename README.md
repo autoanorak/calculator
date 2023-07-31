@@ -1,5 +1,9 @@
 # odin-calculator
 
+Bugs
+- When user clicks an operator before entering a number, the "0" placeholder should become the first operand. Right now the first operand becomes NaN because the parseFloat(display.value) is not the number zero
+- When display flashes after performing an operation, the pre-operation number is briefly visible 
+
 Features to add:
-- move cursor to end of string, no matter where the user clicks on the display, so that the backspace only works from the end of the string, and the user can't delete characters in the middle of the string if they click there
 - add feature to show history of operations
+- use mono-spaced font for calculator display and buttons

@@ -48,6 +48,7 @@ h1 {
   padding: 10px;
   text-align: right;
   caret-color: transparent;
+  cursor: default;
   appearance: none;
   border: 1px solid black;
   border-radius: 5px;
@@ -56,6 +57,10 @@ h1 {
 .row-item-1 input:focus {
   appearance: none;
   outline: none;
+}
+
+.highlight-display {
+  background-color: rgb(222, 222, 222);
 }
 
 button {
