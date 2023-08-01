@@ -91,35 +91,12 @@ function manipulateDisplay(event) {
 }
 
 
-function parseResult(result, maxLength = 19) {
-  let resultStr = result.toString();
-
-  if (resultStr.length > maxLength) {
-    if (resultStr.includes('e')) {
-      let [mantissa, exponent] = resultStr.split('e');
-      console.log(mantissa);
-      console.log(exponent);
-      let mantissaRounded = parseFloat(mantissa).toFixed(maxLength - exponent.length - 1);
-      return Number(mantissaRounded + 'e' + exponent);
-    } else if (resultStr.includes('.')) {
-      let [integer, fraction] = resultStr.split('.');
-      let roundedFraction = fraction.toFixed(maxLength - integer.length);
-      return Number(integer + '.' + roundedFraction);
-    } else {
-      return Number(resultStr.slice(0, maxLength));
-    }
-  } else {
-    return result;
-  }
-}
-
-
 function operate(event) {
   let operator = parseOperator(event);
   handleEquals(operator);
 
   // Handle exception: division by 0
-  if (secondOperand === 0 && operator === 'divide') {
+  if (secondOperand === 0 && currentOperator === 'divide') {
     alert('You can\'t divide by zero!');
 
     display.value = '';
@@ -219,6 +196,27 @@ function handleEquals(operator) {
     return;
   } else if (operator !== 'equals' && currentOperator && secondOperandQueued) {
     nextOperator = operator;
+  }
+}
+
+
+function parseResult(result, maxLength = 17) {
+  let resultStr = result.toString();
+
+  if (resultStr.length > maxLength) {
+    if (resultStr.includes('e')) {
+      let [mantissa, exponent] = resultStr.split('e');
+      let mantissaRounded = parseFloat(mantissa).toFixed(maxLength - exponent.length - 1);
+      return Number(mantissaRounded + 'e' + exponent);
+    } else if (resultStr.includes('.')) {
+      let [integer, fraction] = resultStr.split('.');
+      let roundedFraction = fraction.toFixed(maxLength - integer.length);
+      return Number(integer + '.' + roundedFraction);
+    } else {
+      return Number(resultStr.slice(0, maxLength));
+    }
+  } else {
+    return result;
   }
 }
 
