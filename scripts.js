@@ -253,7 +253,7 @@ function blinkOnce(event) {
 
 
 function moveCursorEnd() {
-  let cursorIndex= display.value.length + 1;
+  let cursorIndex = display.value.length + 1;
 
   display.setSelectionRange(cursorIndex, cursorIndex);
 }
