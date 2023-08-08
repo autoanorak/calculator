@@ -54,7 +54,7 @@ function manipulateDisplay(event) {
   }
 
   if (buttonContent === '+/-') {
-    display.value = parseFloat(display.value * -1);
+    display.value = parseFloat(display.value) * -1;
 
   // When a digit or decimal is clicked, reset the display if the first operand
   // and the current operator have already been set
@@ -200,18 +200,18 @@ function handleEquals(operator) {
 }
 
 
-function parseResult(result, maxLength = 17) {
+function parseResult(result, maxLength = 19) {
   let resultStr = result.toString();
 
   if (resultStr.length > maxLength) {
     if (resultStr.includes('e')) {
       let [mantissa, exponent] = resultStr.split('e');
-      let mantissaRounded = parseFloat(mantissa).toFixed(maxLength - exponent.length - 1);
+      let mantissaRounded = parseFloat(mantissa).toFixed(maxLength - exponent.length - 3);
       return Number(mantissaRounded + 'e' + exponent);
     } else if (resultStr.includes('.')) {
       let [integer, fraction] = resultStr.split('.');
-      let roundedFraction = fraction.toFixed(maxLength - integer.length);
-      return Number(integer + '.' + roundedFraction);
+      let resultRounded = parseFloat(resultStr).toFixed(maxLength - integer.length - 1);
+      return Number(resultRounded);
     } else {
       return Number(resultStr.slice(0, maxLength));
     }
