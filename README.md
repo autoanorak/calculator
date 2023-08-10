@@ -1,7 +1,5 @@
 # Calculator
 
-### Video demo: https://youtu.be/VRCC4LROe18
-
 ### Overview
 This is a web-based calculator application. 
 
