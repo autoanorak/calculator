@@ -15,7 +15,7 @@ There are basic user-interface cues, such as buttons that change colour when pre
 The html file creates the layout for the calculator. Semantic html elements are used where possible.
 
 ##### styles.css
-The stylesheet uses flexbox to arrange the calculator display window and buttons in an aesthetically familiar fashion.
+The stylesheet uses flexbox to arrange the display window and buttons into a typical calculator layout.
 
 ##### scripts.js
 The scripts contain several main functions and helper functions which provide the functionality for the calculator app.
